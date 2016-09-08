@@ -1,0 +1,31 @@
+# Tareas
+#---------------------------------------------------------EJERICIO REGRESIÓN LINEAL: EJERCICIO DE CLASE-----------------------------
+
+#Suponemos que hay una relación fuerte entre las calificaciones que se obtuvieron
+#en el examen de ingreso a la universidad y el promedio general del primer semestre
+
+#ingreso -> x; semestre -> y
+ingreso <- c(39,43,21,64,57,47,28,75,34,52)
+semestre <- c(65,78,52,82,92,89,73,98,56,75)
+
+#1)Grafico de dispersion
+plot (ingreso, semestre, pch= 3, xlab="Calificacion ingreso", ylab="Calificacion 1er semestre", main="GRAFICA DE DISPERSION", col=20)
+
+#2)Ver correlaciones
+cor(semestre, ingreso, method="pearson")
+
+#3)Prueba de hipotesis 
+cor.test(semestre, ingreso, method="pearson")
+#ingreso, semestre
+#4)Aplicar modelo
+mod1 <- lm(semestre~ingreso)
+summary(mod1)
+#ingreso~semestre
+#5)Graficar nuevamente
+plot(ingreso, semestre, pch=11, xlab="Calificacion ingreso", ylab="Calificacion 1er semestre", main="GRAFICA DE DISPERSION")
+
+#6)Recta ajustada con base a coeficientes
+abline(mod1)
+
+#7)Plantear la ecuacion
+semestre= 40.7842 + .7656 ingreso
