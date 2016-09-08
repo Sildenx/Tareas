@@ -1,0 +1,44 @@
+# Tareas
+#------------------------------------------------EJERCICIO DE REGRESIÓN LINEAL: CASO REAL ------------------------------------
+#.............-EJERCICIO REGRESIÓN LINEAL -...................
+
+
+#La presión parcial de oxígeno de la sangre de los escaladores 
+#aumenta cuando ascienden una montaña. Los datos de la siguiente
+#tabla nos muestran las presiones parciales de oxígeno arteriales 
+#según la altura alcanzada H: altura en metros; P:presión
+#parcial en mmHg. 
+
+h <-c(1700, 2000, 2238, 3070, 3450, 3846, 4240, 5610)
+p <-c(69.5, 65.3, 62, 51.5, 47.1, 42.8, 38.6, 25.7)
+
+
+#a) Obtener la gráfica de dispersión 
+
+plot(p, h, pch=1, xlab = "Presión de oxígeno arterial", ylab = "Altura en metros", main = "Gráfica de dispersión", col=18)
+
+#b) Observar la correlación 
+
+cor(h, p, method = "pearson")
+# Se comprobó una buena RELACIÓN LINEAL NEGATIVA (-.9967638)
+
+
+#----------------------PRUEBA DE HIPOTESIS-----------------------------------------
+
+#Queremos comprobar la hipotesis de que la pesión parcial de los 
+#escaladores aumenta cuando ascienden una montaña : Ho= r =0
+# H1 != 0
+cor.test(h, p, method = "pearson")
+
+# Como p-value < .05; p- value = 8.452e-08 , entonces se rechaza Ho.
+#La presion parcial de los escaladores DISMINUYE cuando ascienden la montaña. 
+mod1 <- lm(h~ p)
+summary(mod1)
+
+# Gráficar la recta ajustada del modelo 
+
+abline(mod1)
+
+#Se obtuvo la ecuación ajustada :
+p=7688.669-87.839*h 
+
