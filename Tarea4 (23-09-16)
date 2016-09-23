@@ -1,0 +1,7 @@
+# Tareas----------------------------------------------ACOTACIONES, LEYENDAS...............................................................
+matplot(limbase1, limbasep$fit, type = "l", xlab = "ingreso", ylab = "estatura")
+legend(locator(n=512, type = "n"),"limite para rangos 1",col="green" , lty = 3, lwd = 2, text.col = "black"  ) 
+legend(locator(n=512, type = "n"),"limite para rangos 2",col="red",  lty = 3, lwd = 2, text.col = "black"  )
+legend(locator(n=512, type = "n"),"limite para rangos 3",col="black",  lwd = 0, text.col = "black"  ) 
+
+
