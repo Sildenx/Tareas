@@ -1,0 +1,89 @@
+# Tareas
+
+#TRABAJO EN EQUIPO#
+#Beltrán Arizmendi María; Nava Celis Dennya#
+
+
+#MODELO DE REGRESIÓN LINEAL SIMPLE#
+#Elegir 2 variables: 88(años de escolaridad) y 90(ingreso)
+#Modelo: diagrama de dispersion, correlacion, tabla anova, 4 supuestos, predicción
+
+
+#Mandar llamar la base de datos 
+install.packages("foreign")
+require(foreign)
+sdemt216 <- read.dbf("C://Users//COMPAQ//Documents//sdemt216.dbf")
+
+estado <- subset(sdemt216,sdemt216$ENT == "08")
+
+estado$ANIOS_ESC  <- as.numeric(estado$ANIOS_ESC)
+estudios <- c(estado$ANIOS_ESC)
+
+estado$INGOCUP <- as.numeric(estado$INGOCUP)
+ingreso <- c(estado$INGOCUP)
+
+
+#Grafico de dispersiÓn
+plot (estudios, ingreso, pch= 3, xlab="Años de escolaridad", ylab="Ingreso mensual", main="Grafico de dispersion", col=20)
+
+#Correlaciones
+cor(estudios, ingreso, method="pearson")
+
+#Prueba de hipotesis
+cor.test(estudios, ingreso, method="pearson")
+#como p-value < 0.05, entonces hay relación
+
+#Aplicar el modelo
+mod1 <- lm(estudios~ingreso)
+summary(mod1)
+
+#Graficar nuevamente con recta ajustada
+plot (estudios, ingreso, pch= 3, xlab="Años de escolaridad", ylab="Ingreso mensual", main="Grafico de dispersion", col=20)
+abline(mod1)
+
+#Tabla ANOVA ("calidad del modelo")
+anova(mod1)
+
+# 4 Supuestos 
+install.packages("car")
+base1<- data.frame(estudios, ingreso)
+#a) Valores ajustados 
+base1$fitted.mod1 <- fitted(mod1)
+#b) Residuos del modelo 
+base1$residuals.mod1 <- residuals(mod1)
+
+plot(base1$fitted.mod1, base1$residuals.mod1, xlab = "Valores ajustados", ylab = "Residuos ", main = "Análisis de residuos")
+abline(h=0,lty=2)
+
+#c) Residuos estudentizados 
+base1$rstudent.mod1 <- rstudent(mod1)
+
+plot(base1$fitted.mod1, base1$rstudent.mod1, xlab = "Valores ajustados", ylab = "Residuos studentizados", main = "Análisis de residuos studentizados")
+abline(h=0,lty=2)
+
+#d) Supuesto de normalidad 
+shapiro.test(base1$rstudent.mod1)
+qqnorm(base1$rstudent.mod1, main = "Normal(0,1)")
+qqline(base1$rstudent.mod1)
+
+#e)Comprobar la homegeniedad de varianzas 
+install.packages("lmtest")
+bptest(mod1)
+
+
+#Predicción: Durbin Watson, Valor de Durbin Watson
+install.packages("lmtest")
+require(lmtest)
+dwtest(mod1, alternative = "two.sided")
+plot(base1$residuals.mod1, pch=8, ylab = "Residuales",xlab = "in")
+abline(h=cor(base1$ingreso, base1$estudios))
+
+
+limbase1 <- seq(min(base1$estudios), max(base1$estudios), length=11514)
+limbase1  <- data.frame(limbase1)
+limbasep <- predict.lm(mod1, limbase1, interval = "prediction", se.fit = TRUE, data=base1)
+head(limbasep$fit)
+matplot(limbase1, limbasep$fit, type = "l", xlab = "Años de escolaridad ", ylab = "Ingreso mensual ")
+legend(locator(n=512, type = "n"),"limite (upr)",col="green" ,  lwd = 0, text.col = "black"  ) 
+legend(locator(n=512, type = "n"),"limite (lwr)",col="red",  lwd = 0, text.col = "black"  )
+legend(locator(n=512, type = "n"),"limite (fit)",col="black",  lwd = 0, text.col = "black"  ) 
