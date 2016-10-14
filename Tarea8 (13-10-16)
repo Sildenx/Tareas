@@ -1,9 +1,10 @@
 # Tareas
-#Tarea casa ... EN EQUIPO 
+
+#............................. ......................PREDICCIÓN .........
 # con la base SDEM de la ENOE 2016 2do trimestre 
-#3 Aplicar unn modelo con las sig variables 
+#3 Aplicar un modelo con las sig variables 
 #dependiente = INGOCUP
-#INDEP EDAD, SEXO, HRSOCUP, AÑOS ESCOLARIDAD 
+#Independiente= EDAD, SEXO, HRSOCUP, AÑOS ESCOLARIDAD 
 #RESTRICCIÓN  DE LA POBLACIÓN 
 #OAXACA 
 #SEAN DE 15  A 65 AÑOS 
