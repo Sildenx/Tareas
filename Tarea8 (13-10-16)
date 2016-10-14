@@ -1,11 +1,83 @@
 # Tareas
-
-#............................. ......................PREDICCIÓN .........
-# con la base SDEM de la ENOE 2016 2do trimestre 
+#............................. ......................PREDICCIÓN .............................
+#Alumnas:Beltrán Arizmendi María y  Nava Celis Dennya 
+#Con la base SDEM de la ENOE 2016 2do trimestre 
 #3 Aplicar un modelo con las sig variables 
 #dependiente = INGOCUP
 #Independiente= EDAD, SEXO, HRSOCUP, AÑOS ESCOLARIDAD 
 #RESTRICCIÓN  DE LA POBLACIÓN 
 #OAXACA 
 #SEAN DE 15  A 65 AÑOS ibngreso entre 1 y 30000, asalariados o subordinados, modelo sin NA
- 
+
+install.packages("foreign")
+require(foreign)
+sdem2016 <- read.dbf("C://Users//COMPAQ//Documents//sdemt216.dbf")
+View(sdem2016)
+
+sdem2016$INGOCUP<-as.numeric(sdem2016$INGOCUP)
+sdem2016$EDA<-as.numeric(sdem2016$EDA)
+sdem2016$SEX<-as.numeric(sdem2016$SEX)
+sdem2016$HRSOCUP<-as.numeric(sdem2016$HRSOCUP)
+sdem2016$ANIOS_ESC<-as.numeric(sdem2016$ANIOS_ESC)
+
+datos1 <-subset(sdem2016,sdem2016$CD_A==20 & sdem2016$REMUNE2C==1)
+etiq <-c("INGOCUP","SEX","EDA","HRSOCUP","ANIOS_ESC")
+
+datos2<-datos1[,etiq]
+
+datos3<-subset(datos2,datos2$INGOCUP>=1 & datos2$INGOCUP<=3000)
+
+datos4<-subset(datos3,datos3$EDA>=15 & datos3$EDA<=65)
+
+cor(datos4,use="everything",method = "pearson")
+
+install.packages("lmtest")
+require(lmtest)
+
+mod <-lm(datos4$INGOCUP~datos4$SEX+datos4$EDA+datos4$HRSOCUP+datos4$ANIOS_ESC)
+summary(mod)
+
+#R^2= 0.2465. Tres variables con alta significancia
+
+#SUPUESTOS
+
+plot(mod,which=1,pch=4)
+
+plot(mod,which=2,pch=4)
+
+plot(mod,which=3,pch=4)
+
+plot(mod,which=5,pch=4)
+
+mod$ajus<-fitted(mod)
+mod$res<-residuals(mod)
+mod$rst<-rstudent(mod)
+
+install.packages("lmtest")
+require(lmtest)
+
+ks.test(mod$rst,"pnorm")
+#Se acepta que exste normalidad
+
+bptest(mod,studentize = FALSE,data=mod)
+#Tenemos un p-value>0.05
+
+dwtest(mod,alternative="two.sided",data=mod)
+
+
+step(mod, direction = "backward")
+
+#-----------------------------------------PREDICCIÓN-------------------------------------------------
+
+
+inter <- seq(min(datos4$ANIOS_ESC), max(datos4$ANIOS_ESC), length=length(datos4$ANIOS_ESC))
+inter 
+bolpred <-data.frame(EDA=40, SEX=1,HRSOCUP=10, ANIOS_ESC= inter)
+predi1 <-predict(mod, bolpred, interval="prediction", se.fit=TRUE, data=datos4)
+head(predi1$fit)
+
+
+#----------------------------------------------------------------------------------------------------
+install.packages("car")
+require(car)
+vif(mod)
