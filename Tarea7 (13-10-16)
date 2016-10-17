@@ -1,15 +1,110 @@
 # Tareas
+#-------------------------------------------------------------BASE BANCO MUNDIAL -----------------------------------------------------------------
 install.packages("foreign")
 require(foreign)
+
+install.packages("lmtest")
+require(lmtest)
 bancmun <- read.csv("C://Users//COMPAQ//Desktop//WDI_Data.CSV")
 View(bancmun)
-#--------------------------------------------------------MÉXICO----------------------------------------
+#--------------------------------------------------------MÉXICO---------------------------------------------------------------------------------
 
-datamex <- bancmun[c(-1:-251008, -251010:-251055, -251058:-251303,-251305:-251310, -251313:-251391, -251393:-380160), c(-1, -2, -3, -5:-49,-61)]
-datamex1 <- t(datamex)
-#-------------------------------------------------------ARGENTINA--------------------------------------              
-datarg <-bancmun[c(-1:-78208, -78210:-78256, -78258:-78503, -78505:-78510, -78513:-78591, -78593:-79173, -79175:-380160), c(-1, -2, -3, -5:-49,-61)]
-datarg1 <- t(datarg)
-#--------------------------------------------------------BRASIL---------------------------------------- 
-datbrasil <-bancmun[c(-1:-105568, -105570:-105616, -105618:-105863, -105865:-105870, -105873:-105951, -105953:-106533, -106535:-380160), c(-1, -2, -3, -5:-49,-61) ]
-databrasil1 <- t(datbrasil)
+datamex <- bancmun[c(-1:-250697, -250699:-250864, -250866:-251008, -251010:-251055, -251057:-251303,-251305:-251310, -251313:-251391, -251393:-251973, -251975:-380160), c(-1:-49,-61)]
+datamex1<- as.data.frame(t(datamex))
+  colnames(datamex1, prefix = "col")
+  colnames(datamex1)<- c("TC_ANUAL", "NAC_DEF", "TGF", "PIB", "ESPERANZAFEM", "ALFABMAS", "ALFABFEM", "TMI", "URBANA")
+  na.omit(datamex1)
+  datamex1[is.na(datamex1)] <- 0
+  cor(datamex1, use = "everything", method = "pearson")
+
+modmex <- lm(datamex1$ESPERANZAFEM~ datamex1$TC_ANUAL+ datamex1$NAC_DEF+ datamex1$TGF + datamex1$PIB+ datamex1$ALFABMAS+datamex1$ALFABFEM+datamex1$TMI+ datamex1$URBANA, datamex1)
+summary(modmex)
+anova(modmex)
+
+# Se obtiene una R cuadrada de 0.9209 
+# Las variables más significativas son: NAC_DEF, ALFABMAS, TMI y URBANA. 
+
+datamex1$ajustados <- fitted(modmex)
+datamex1$residuales <- residuals(modmex)
+datamex1$rstud <-rstudent(modmex)
+
+ks.test(datamex1$rstud, "pnorm")
+bptest(modmex, studentize = FALSE, data = datamex1)
+dwtest(modmex, alternative = "two.sided", data = datamex1 )
+
+plot(modmex, which = 1, pch=3)
+plot(modmex, which = 2, pch=3)
+plot(modmex, which = 3, pch=3)
+step(modmex, direction = "backward")
+
+# Se genero el modelo : 
+#datamex1$ESPERANZAFEM~ datamex1$TC_ANUAL+ datamex1$NAC_DEF+ datamex1$TGF + datamex1$PIB+ datamex1$ALFABMAS+datamex1$ALFABFEM+datamex1$TMI+ datamex1$URBANA, datamex1
+
+#-----------------------------------------------------------ARGENTINA----------------------------------------------------------------------
+datarg <-bancmun[c(-1:-77897, -77899:-78064, -78066:-78208, -78210:-78255, -78257:-78503, -78505:-78510, -78513:-78591, -78593:-79173, -79175:-380160), c(-1:-49,-61)]
+datarg1<- as.data.frame(t(datarg))
+colnames(datarg1, prefix = "col")
+colnames(datarg1)<- c("TC_ANUAL", "NAC_DEF", "TGF", "PIB", "ESPERANZAFEM", "ALFABMAS", "ALFABFEM", "TMI", "URBANA")
+na.omit(datarg1)
+datarg1[is.na(datarg1)] <- 0
+cor(datarg1, use = "everything", method = "pearson")
+
+modarg <- lm(datarg1$ESPERANZAFEM~ datarg1$TC_ANUAL+ datarg1$NAC_DEF+ datarg1$TGF + datarg1$PIB+ datarg1$ALFABMAS+datarg1$ALFABFEM+datarg1$TMI+ datarg1$URBANA, datarg1)
+summary(modarg)
+anova(modarg)
+
+datarg1$ajustados <- fitted(modarg)
+datarg1$residuales <- residuals(modarg)
+datarg1$rstud <-rstudent(modarg)
+
+ks.test(datarg1$rstud, "pnorm")
+bptest(modarg, studentize = FALSE, data = datarg1)
+dwtest(modarg, alternative = "two.sided", data = datarg1)
+
+plot(modarg, which = 1, pch=3)
+plot(modarg, which = 2, pch=3)
+plot(modarg, which = 3, pch=3)
+step(modarg, direction = "backward")
+
+# Se propone el modelo : 
+#datarg1$ESPERANZAFEM ~ datarg1$TC_ANUAL + datarg1$TGF + datarg1$PIB + datarg1$ALFABMAS + datarg1$ALFABFEM + datarg1$TMI
+ modarg1 <- lm(datarg1$ESPERANZAFEM~ datarg1$TC_ANUAL + datarg1$TGF + datarg1$PIB + datarg1$ALFABMAS + datarg1$ALFABFEM + datarg1$TMI, data = datarg1)
+ summary(modarg1)
+ anova(modarg1)
+ 
+#--------------------------------------------------------BRASIL-----------------------------------------------------------
+ datbrasil <-bancmun[c(-1:-105257, -105259: -105424, -105426:-105568, -105570:-105615, -105617:-105863, -105865:-105870, -105873:-105951, -105953:-106533, -106535:-380160), c(-1:-49,-61) ]
+ databrasil1<- as.data.frame(t(datbrasil))
+ colnames(databrasil1, prefix = "col")
+ colnames(databrasil1)<- c("TC_ANUAL", "NAC_DEF", "TGF", "PIB", "ESPERANZAFEM", "ALFABMAS", "ALFABFEM", "TMI", "URBANA")
+ na.omit(databrasil1)
+ databrasil1[is.na(databrasil1)] <- 0
+ cor(databrasil1, use = "everything", method = "pearson")
+ 
+ modbrasil <- lm(databrasil1$ESPERANZAFEM~ databrasil1$TC_ANUAL+ databrasil1$NAC_DEF+ databrasil1$TGF + databrasil1$PIB+ databrasil1$ALFABMAS+databrasil1$ALFABFEM+databrasil1$TMI+ databrasil1$URBANA, databrasil1)
+ summary(modbrasil)
+ anova(modbrasil)
+ 
+ # Se obtiene una R cuadrada de 0.9209 
+ # Las variables más significativas son: NAC_DEF, ALFABMAS, TMI y URBANA. 
+ 
+ databrasil1$ajustados <- fitted(modbrasil)
+ databrasil1$residuales <- residuals(modbrasil)
+ databrasil1$rstud <-rstudent(modbrasil)
+ 
+ ks.test(databrasil1$rstud, "pnorm")
+ bptest(modbrasil, studentize = FALSE, data = databrasil1)
+ dwtest(modbrasil, alternative = "two.sided", data = databrasil1)
+ 
+ plot(modbrasil, which = 1, pch=3)
+ plot(modbrasil, which = 2, pch=3)
+ plot(modbrasil, which = 3, pch=3)
+ step(modbrasil, direction = "backward")
+ 
+ # El nuevo modelo generado: 
+ # databrasil1$ESPERANZAFEM ~ databrasil1$TC_ANUAL + databrasil1$TGF + databrasil1$PIB + databrasil1$ALFABMAS + databrasil1$ALFABFEM + databrasil1$TMI + databrasil1$URBANA
+ 
+modbrasil1 <- lm( databrasil1$ESPERANZAFEM ~ databrasil1$TC_ANUAL + databrasil1$TGF + databrasil1$PIB + databrasil1$ALFABMAS + databrasil1$ALFABFEM + databrasil1$TMI + databrasil1$URBANA, data = databrasil1)
+summary(modbrasil1)
+anova(modbrasil1)
+
