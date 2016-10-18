@@ -1,17 +1,6 @@
-# Tareas
-#............................. ......................PREDICCIÓN .............................
-#Alumnas:Beltrán Arizmendi María y  Nava Celis Dennya 
-#Con la base SDEM de la ENOE 2016 2do trimestre 
-#3 Aplicar un modelo con las sig variables 
-#dependiente = INGOCUP
-#Independiente= EDAD, SEXO, HRSOCUP, AÑOS ESCOLARIDAD 
-#RESTRICCIÓN  DE LA POBLACIÓN 
-#OAXACA 
-#SEAN DE 15  A 65 AÑOS ibngreso entre 1 y 30000, asalariados o subordinados, modelo sin NA
-
 install.packages("foreign")
 require(foreign)
-sdem2016 <- read.dbf("C://Users//COMPAQ//Documents//sdemt216.dbf")
+sdem2016 <- read.dbf("C://Users//Maria//Desktop//sdemt216.dbf")
 View(sdem2016)
 
 sdem2016$INGOCUP<-as.numeric(sdem2016$INGOCUP)
@@ -31,23 +20,87 @@ datos4<-subset(datos3,datos3$EDA>=15 & datos3$EDA<=65)
 
 cor(datos4,use="everything",method = "pearson")
 
-install.packages("lmtest")
-require(lmtest)
+#INGOCUP         SEX        EDA     HRSOCUP   ANIOS_ESC
+#INGOCUP    1.00000000  0.18004569  0.1645588  0.47374858 -0.03041259
+#SEX        0.18004569  1.00000000  0.3429103 -0.03467788 -0.12259575
+#EDA        0.16455880  0.34291027  1.0000000  0.15782956 -0.33585651
+#HRSOCUP    0.47374858 -0.03467788  0.1578296  1.00000000 -0.04951381
+#ANIOS_ESC -0.03041259 -0.12259575 -0.3358565 -0.04951381  1.00000000
 
-mod <-lm(datos4$INGOCUP~datos4$SEX+datos4$EDA+datos4$HRSOCUP+datos4$ANIOS_ESC)
+mod<-lm(datos4$INGOCUP~datos4$SEX+datos4$EDA+datos4$HRSOCUP+datos4$ANIOS_ESC)
 summary(mod)
 
-#R^2= 0.2465. Tres variables con alta significancia
+#Call:
+#  lm(formula = datos4$INGOCUP ~ datos4$SEX + datos4$EDA + datos4$HRSOCUP + 
+       datos4$ANIOS_ESC)
 
-#SUPUESTOS
+#Residuals:
+#  Min       1Q   Median       3Q      Max 
+#-1889.22  -477.21    97.38   442.22  1244.73 
 
-plot(mod,which=1,pch=4)
+#Coefficients:
+#  Estimate Std. Error t value Pr(>|t|)    
+#(Intercept)       917.813    265.773   3.453 0.000704 ***
+#  datos4$SEX        273.613    103.798   2.636 0.009189 ** 
+#  datos4$EDA          1.599      3.561   0.449 0.653996    
+#datos4$HRSOCUP     19.490      2.780   7.011 5.78e-11 ***
+#  datos4$ANIOS_ESC    5.972     15.277   0.391 0.696344    
+#---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-plot(mod,which=2,pch=4)
+#Residual standard error: 616.7 on 165 degrees of freedom
+#Multiple R-squared:  0.2643,	Adjusted R-squared:  0.2465 
+#F-statistic: 14.82 on 4 and 165 DF,  p-value: 2.296e-10
 
-plot(mod,which=3,pch=4)
+step(mod,direction = "backward")
 
-plot(mod,which=5,pch=4)
+#Start:  AIC=2189.22
+#datos4$INGOCUP ~ datos4$SEX + datos4$EDA + datos4$HRSOCUP + datos4$ANIOS_ESC
+
+#Df Sum of Sq      RSS    AIC
+#- datos4$ANIOS_ESC  1     58127 62811153 2187.4
+#- datos4$EDA        1     76685 62829712 2187.4
+#<none>                          62753027 2189.2
+#- datos4$SEX        1   2642695 65395722 2194.2
+#- datos4$HRSOCUP    1  18692279 81445306 2231.5
+
+#Step:  AIC=2187.37
+#datos4$INGOCUP ~ datos4$SEX + datos4$EDA + datos4$HRSOCUP
+
+#Df Sum of Sq      RSS    AIC
+#- datos4$EDA      1     45152 62856305 2185.5
+#<none>                        62811153 2187.4
+#- datos4$SEX      1   2636544 65447697 2192.4
+#- datos4$HRSOCUP  1  18698630 81509783 2229.7
+
+#Step:  AIC=2185.5
+#datos4$INGOCUP ~ datos4$SEX + datos4$HRSOCUP
+
+#Df Sum of Sq      RSS    AIC
+#<none>                        62856305 2185.5
+#- datos4$SEX      1   3296600 66152905 2192.2
+#- datos4$HRSOCUP  1  19675381 82531686 2229.8
+
+#Call:
+#  lm(formula = datos4$INGOCUP ~ datos4$SEX + datos4$HRSOCUP)
+
+#Coefficients:
+#  (Intercept)      datos4$SEX  datos4$HRSOCUP  
+#1008.38          285.91           19.67  
+
+anova(mod)
+
+#Analysis of Variance Table
+
+#Response: datos4$INGOCUP
+#Df   Sum Sq  Mean Sq F value    Pr(>F)    
+#datos4$SEX         1  2765016  2765016  7.2702  0.007738 ** 
+#  datos4$EDA         1  1021903  1021903  2.6869  0.103079    
+#datos4$HRSOCUP     1 18698630 18698630 49.1653 5.746e-11 ***
+#  datos4$ANIOS_ESC   1    58127    58127  0.1528  0.696344    
+#Residuals        165 62753027   380321                      
+#---
+#  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 mod$ajus<-fitted(mod)
 mod$res<-residuals(mod)
@@ -57,27 +110,24 @@ install.packages("lmtest")
 require(lmtest)
 
 ks.test(mod$rst,"pnorm")
-#Se acepta que exste normalidad
 
-bptest(mod,studentize = FALSE,data=mod)
-#Tenemos un p-value>0.05
+#One-sample Kolmogorov-Smirnov test
 
-dwtest(mod,alternative="two.sided",data=mod)
+#data:  mod$rst
+#D = 0.07021, p-value = 0.3718
+#alternative hypothesis: two-sided
 
+bptest(mod,studentize = F,data = mod)
 
-step(mod, direction = "backward")
+#Breusch-Pagan test
 
-#-----------------------------------------PREDICCIÓN-------------------------------------------------
+#data:  mod
+#BP = 4.6277, df = 4, p-value = 0.3277
 
+dwtest(mod,alternative = "two.sided",data = mod)
 
-inter <- seq(min(datos4$ANIOS_ESC), max(datos4$ANIOS_ESC), length=length(datos4$ANIOS_ESC))
-inter 
-bolpred <-data.frame(EDA=40, SEX=1,HRSOCUP=10, ANIOS_ESC= inter)
-predi1 <-predict(mod, bolpred, interval="prediction", se.fit=TRUE, data=datos4)
-head(predi1$fit)
+#Durbin-Watson test
 
-
-#----------------------------------------------------------------------------------------------------
-install.packages("car")
-require(car)
-vif(mod)
+#data:  mod
+#DW = 1.9821, p-value = 0.8904
+#alternative hypothesis: true autocorrelation is not 0
