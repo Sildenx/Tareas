@@ -1,4 +1,33 @@
-# Tareas
+install.packages("foreign")
+require (foreign)
+install.packages("questionr")
+require (questionr)
+
+# El cuestionario sociodemográfico tiene como objetivo capturar los datos sociodemográficos del hogar.
+#Los cuestionarios MTI tienen el  objetivo de captar la información de niños de 11 a 17 años sobre sus
+#actividades económicas, domésticas y escolares
+
+
+setwd("C://Users//DENN//Downloads")
+SDEMINF <- data.frame(read.dbf("mti2015_05_17_sdem_precodificado.DBF"))
+
+
+
+
+#"T_PER": persona para la que trabaja 
+#1 Es un familiar 
+#2 No es un familiar 
+#3 Trabaja solo o por su cuenta 
+#4 No especificado 
+
+#T_LOC : 
+#1Localidades  mayores de 100, 000 habitantes 
+#2Localidaes de 15 000 habitantes a 99 999 habitantes 
+#3 Localidades de 2500 habitantes a 14999 habitantes 
+#4Localidades menores a 2500 habitantes 
+
+
+
 SDEMINF_LOCURB <- data.frame (subset(SDEMINF,SDEMINF$T_LOC==1 |SDEMINF$T_LOC==2| SDEMINF$T_LOC==3, weights=SDEMINF$FAC_MTI))
 
 wtd.table(SDEMINF_LOCURB$T_PER==1)
