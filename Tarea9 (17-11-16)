@@ -1,0 +1,87 @@
+# Tareas
+SDEMINF_LOCURB <- data.frame (subset(SDEMINF,SDEMINF$T_LOC==1 |SDEMINF$T_LOC==2| SDEMINF$T_LOC==3, weights=SDEMINF$FAC_MTI))
+
+wtd.table(SDEMINF_LOCURB$T_PER==1)
+wtd.table(SDEMINF_LOCURB$T_PER==2)
+wtd.table(SDEMINF_LOCURB$T_PER==3)
+
+
+CUE1<- data.frame(read.dbf("mti2015_12_17_cuestionario_basico.dbf"))
+CUE2 <- data.frame(read.dbf("mti2015_05_11_cuestionario_basico.dbf"))
+
+
+
+folio <- paste(SDEMINF_LOCURB$CON, SDEMINF_LOCURB$ENT, SDEMINF_LOCURB$V_SEL, SDEMINF_LOCURB$N_HOG, SDEMINF_LOCURB$H_MUD, SDEMINF_LOCURB$N_REN, SDEMINF_LOCURB$CD_A)
+x <- data.frame(SDEMINF_LOCURB,folio)
+
+
+
+folio <-paste(CUE1$CON, CUE1$ENT, CUE1$V_SEL, CUE1$N_HOG, CUE1$H_MUD, CUE1$N_REN, CUE1$CD_A)
+y <- data.frame(CUE1, folio)
+
+
+folio <- paste(CUE2$CON, CUE2$ENT, CUE2$V_SEL, CUE2$N_HOG, CUE2$H_MUD, CUE2$N_REN, CUE2$CD_A)
+z <- data.frame(CUE2, folio)
+
+total <- merge(x,y, by="folio", all.x = TRUE)
+MTITOTAL <- merge(total, z, by="folio", all.x = TRUE)
+
+
+
+#.............................................FRECUENCIAS..............................................
+#.X MTITOTAL 
+#.Y CUESTIONARIO 12_17 AÑOS 
+
+#......................................................................................................
+# GRUPOS DE EDAD
+#1) 05-11 AÑOS 
+#2) 12-17AÑOS 
+
+wtd.table(MTITOTAL$EDA)
+wtd.table(MTITOTAL$EDA.y)
+
+#SEXO 
+wtd.table(MTITOTAL$SEX.x)
+#1: Hombre 
+#2: mujer 
+
+#ESCOLARIDAD NIÑOS 05-17 AÑOS 
+wtd.table(MTITOTAL$ANIOS_ESC)
+#1-24 AÑOS 
+#99: NO ESPECIFICADO 
+
+#NIVEL DE INSTRUCCION 05 AÑOS Y MAS 
+wtd.table(MTITOTAL$NIV_INS)
+#1 Primaria incompleta 
+#2 Primaria completa 
+#3 Secundaria completa 
+#4 Medio superior y superior 
+#5 No especificado 
+
+#CONDICIÓN DE ACTIVIDAD 
+
+#NIVEL EDUCATIVO JEFE DEL HOGAR
+wtd.table(MTITOTAL$CS_P13_1)
+#00 Ninguno 
+#01 Preescolar
+#02 Primaria 
+#03 Secundaria 
+#04 Preparatoria o bachillerato 
+#05 Normal 
+#06 Carrera técnica 
+#07 Profesional 
+#99 No sabe 
+
+#CONDICIÓN DE ACTIVIDAD 
+wtd.table(MTITOTAL$DOMESTICO)
+#1 Solo PEA
+#2 PEA y estudian 
+#3 PEA y quehaceres domésticos 
+#4 PEA y apoyos del hogar 
+#5 PEA y otras actividades 
+#6 Solo PNEA 
+#7 PEA y estudian 
+#8 PNEA y quehaceres domésticos 
+#9 PNEA y apoyos del hogar 
+#10PNEA y otras actividades
+        
